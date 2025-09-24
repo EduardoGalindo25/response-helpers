@@ -16,14 +16,17 @@ composer require gabogalro/response-helpers
 
 ## Ejemplo de uso para respuesta exitosa
 
+## para
+
 ```php
 <?php
 
 use gabogalro\responseHelpers\Response;
 
 return Response::success(
-                'Member registered successfully',
-                200
+                'Member registered successfully', // -> mensaje personalizado
+                null, // -> campo data es necesario enviar algo, enviar null si solo es mensaje de exito sin datos
+                200 // -> codigo de respuesta siguiendo normas
             );
 ```
 
@@ -32,6 +35,7 @@ return Response::success(
 ```json
 {
   "success": true,
+  "data": null,
   "message": "Member registered successfully"
 }
 ```
@@ -44,9 +48,9 @@ return Response::success(
 use gabogalro\responseHelpers\Response;
 
 return Response::error(
-                'An error occurred while registering the member',
-                $e->getMessage(),
-                500
+                'An error occurred while registering the member', // -> mensaje personalizado
+                $e->getMessage(), // -> campo de errores, puede ser personalizado o generico
+                500 // ->codigo de respuesta siguiendo normas
             );
 ```
 
@@ -68,9 +72,9 @@ return Response::error(
 use gabogalro\responseHelpers\Response;
 
 return Response::success(
-                'Members retrieved successfully',
-                $members,
-                200
+                'Members retrieved successfully', // -> mensaje personalizado
+                $members, // -> datos que se desean retornar
+                200 // -> codigo de respuesta siguiendo normas
             );
 ```
 
@@ -92,11 +96,63 @@ return Response::success(
 }
 ```
 
+## Ejemplo completo usando try y catch
+
+```php
+<?php
+
+use gabogalro\responseHelpers\Response;
+use Exception;
+
+//ejemplo de insercion de datos
+public function registrarMiembro(){
+
+  try{
+
+    //proceso de registro...
+
+    return Response::success(
+                'Member registered successfully',
+                null,
+                201 // -> codigo de creacion exitosa
+            );
+  }catch(Exception $e){
+    return Response::error(
+                'An error occurred while registering the member',
+                $e->getMessage(), //
+                500 // ->codigo de error de servidor
+            );
+  }
+}
+
+//ejemplo de consulta de datos
+
+public function getMiembro(){
+
+  try{
+
+    //proceso de consulta... guarda datos en variable $member...
+
+    return Response::success(
+                'Member retrieved successfully',
+                $member,
+                200
+            );
+  }catch(Exception $e){
+    return Response::error(
+                'An error occurred while consulting the member',
+                $e->getMessage(),
+                404 // ->codigo de not found
+            );
+  }
+}
+
 ## Requisitos previos
 
-- PHP 5.4 o superior
+- PHP 7.4 o superior
 - Composer
 
 ## License
 
 MIT © gabogalro. See [LICENSE](LICENSE) for details.
+```
